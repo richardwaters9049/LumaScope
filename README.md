@@ -160,7 +160,7 @@ bun run dev
 
 ---
 
-# Impact Potential
+## Impact Potential
 
 - 63% faster triage for high-risk patients
 
@@ -168,7 +168,7 @@ bun run dev
 
 - 30% workload reduction for haematology teams
 
-# Technical Showcase
+## Technical Showcase
 
 - Full-stack development (Python + TypeScript)
 
