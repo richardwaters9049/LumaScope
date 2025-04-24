@@ -160,8 +160,6 @@ bun run dev
 
 ---
 
-## Why This Matters
-
 # Impact Potential
 
 - 63% faster triage for high-risk patients
