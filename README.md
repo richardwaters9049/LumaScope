@@ -10,7 +10,7 @@
 
 ![skops](https://img.shields.io/badge/skops-0.7-red)
 
-![UK English](https://img.shields.io/badge/Language-UK_English-ff69b4)
+---
 
 **A research tool to identify abnormal blood cells associated with leukaemia, reducing diagnostic delays through AI-assisted analysis.**
 
