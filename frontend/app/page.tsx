@@ -70,7 +70,7 @@ export default function HomePage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" className="p-6 my-5 text-2xl">
+        <Button type="submit" className="p-6 my-5 text-xl">
           LOGIN
         </Button>
       </form>
