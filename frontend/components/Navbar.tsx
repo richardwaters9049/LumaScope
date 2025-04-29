@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import LumaLogo from "@/public/images/luma-logo-4.png";
+import Image from "next/image";
 
 const navLinks = [
     { name: 'History', href: '/history' },
@@ -49,22 +51,30 @@ export function Navbar() {
             className="w-full fixed top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-gray-950/70 shadow-md"
         >
             <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center gap-6 text-lg text-center px-4 tracking-widest">
+
+                    <Image
+                        src={LumaLogo}
+                        alt="LumaScope Logo"
+                        width={60}
+                        height={60}
+                        priority
+                    />
                     <Link
                         href="/"
-                        className="text-2xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+                        className="text-2xl font-semibold text-blue-950 dark:text-white"
                     >
                         LumaScope
                     </Link>
                     {fullName && (
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        <span className="font-semibold text-gray-700 dark:text-gray-300 hidden lg:inline">
                             Welcome, {fullName}
                         </span>
                     )}
                 </div>
 
                 {/* Desktop links */}
-                <nav className="hidden md:flex space-x-8">
+                <nav className="hidden md:flex space-x-8 text-lg tracking-widest">
                     {navLinks.map((link, index) => {
                         const isActive = pathname === link.href;
                         return (
