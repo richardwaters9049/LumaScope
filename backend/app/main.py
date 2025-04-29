@@ -2,6 +2,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, crud, schemas, database
+from typing import List
+from .database import SessionLocal, engine
 
 app = FastAPI()
 
@@ -21,3 +23,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=400, detail="Username or Email already taken")
     return db_user
+
+
+# GET request to fetch all users
+@app.get("/users/", response_model=List[schemas.User])
+def get_users(db: Session = Depends(get_db)):
+    users = crud.get_users(db)
+    return users

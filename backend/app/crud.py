@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from passlib.context import CryptContext
 from sqlalchemy.exc import IntegrityError
+from . import models, schemas
 
 # Setup the password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -27,3 +28,8 @@ def create_user(db: Session, user: schemas.UserCreate):
     except IntegrityError:
         db.rollback()
         return None  # User with the same email/username might already exist
+
+
+# Get all users
+def get_users(db: Session):
+    return db.query(models.User).all()
