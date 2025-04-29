@@ -57,5 +57,6 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
-    token = create_access_token(data={"sub": user.email})
+    token_data = {"sub": user.email, "full_name": user.full_name, "user_id": user.id}
+    token = create_access_token(data=token_data)
     return {"access_token": token, "token_type": "bearer"}

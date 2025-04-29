@@ -29,7 +29,13 @@ export default function HomePage() {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("justLoggedIn", "true");
 
-        // Delay to ensure localStorage is written before redirect
+        // Extract full_name from JWT and store it
+        const tokenParts = data.access_token.split(".");
+        if (tokenParts.length === 3) {
+          const payload = JSON.parse(atob(tokenParts[1]));
+          localStorage.setItem("full_name", payload.full_name);
+        }
+
         setTimeout(() => {
           router.push("/dashboard");
         }, 50);

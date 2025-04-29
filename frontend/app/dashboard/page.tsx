@@ -16,7 +16,7 @@ const DashboardPage = () => {
         if (isAuthenticated) {
             if (justLoggedIn) {
                 toast.success("Logged in successfully!!! ✅", {
-                    duration: 3000,
+                    duration: 1500,
                 });
                 localStorage.removeItem("justLoggedIn");
             }
