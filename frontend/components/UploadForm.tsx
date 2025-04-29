@@ -62,29 +62,30 @@ export default function UploadForm() {
                             />
                             <label
                                 htmlFor="file-upload"
-                                className="cursor-pointer text-base font-medium text-blue-600 hover:underline"
+                                className="cursor-pointer text-lg font-medium text-blue-600 hover:underline tracking-widest"
                             >
-                                {selectedFile ? selectedFile.name : "Choose a smear image"}
+                                {selectedFile ? selectedFile.name : "Upload Smear Image"}
                             </label>
                         </div>
-
-                        <Button
-                            onClick={handleUpload}
-                            disabled={!selectedFile || isUploading}
-                            className={clsx(
-                                "w-full transition-all text-base font-semibold",
-                                isUploading && "cursor-wait opacity-80"
-                            )}
-                        >
-                            {isUploading ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="animate-spin h-4 w-4" />
-                                    Uploading...
-                                </span>
-                            ) : (
-                                "Analyze"
-                            )}
-                        </Button>
+                        <div className="button-container w-full flex justify-center items-center">
+                            <Button
+                                onClick={handleUpload}
+                                disabled={!selectedFile || isUploading}
+                                className={clsx(
+                                    "transition-all text-lg font-semibold analyze-button mt-4 p-8 rounded-xl tracking-widest",
+                                    isUploading && "cursor-wait opacity-80"
+                                )}
+                            >
+                                {isUploading ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin h-4 w-4" />
+                                        Uploading...
+                                    </span>
+                                ) : (
+                                    "Analyse Smear"
+                                )}
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
             </motion.div>

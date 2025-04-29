@@ -120,3 +120,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+.analyze-button {
+  background-color: #16047a;
+  color: #fff;
+  opacity: 1;
+}
