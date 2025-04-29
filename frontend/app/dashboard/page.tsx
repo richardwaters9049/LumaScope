@@ -10,15 +10,18 @@ const DashboardPage = () => {
     const router = useRouter();
 
     useEffect(() => {
-        // Only show the toast if the user is authenticated
-        if (localStorage.getItem("isAuthenticated") === "true") {
-            // Show success toast after login and redirection to dashboard
-            toast.success("Logged in successfully!!! ✅", {
-                duration: 3000, // Show for 2 seconds
-            });
+        const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+        const justLoggedIn = localStorage.getItem("justLoggedIn") === "true";
+
+        if (isAuthenticated) {
+            if (justLoggedIn) {
+                toast.success("Logged in successfully!!! ✅", {
+                    duration: 3000,
+                });
+                localStorage.removeItem("justLoggedIn");
+            }
         } else {
-            // If not authenticated, redirect to login page
-            router.replace("/"); // Redirect to login page if not authenticated
+            router.replace("/");
         }
     }, [router]);
 
