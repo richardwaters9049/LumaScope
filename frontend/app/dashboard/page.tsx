@@ -13,7 +13,7 @@ const DashboardPage = () => {
         // Only show the toast if the user is authenticated
         if (localStorage.getItem("isAuthenticated") === "true") {
             // Show success toast after login and redirection to dashboard
-            toast.success("Logged in successfully!! ✅", {
+            toast.success("Logged in successfully!!! ✅", {
                 duration: 3000, // Show for 2 seconds
             });
         } else {
