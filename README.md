@@ -12,7 +12,7 @@
 
 ---
 
-**A research tool to identify abnormal blood cells associated with leukaemia, reducing diagnostic delays through AI-assisted analysis.**
+## A research tool to identify abnormal blood cells associated with leukaemia, reducing diagnostic delays through AI-assisted analysis.
 
 👉 **Live Demo**: [Vercel App](https://your-demo-link.vercel.app) | **API Docs**: [FastAPI Swagger](http://localhost:8000/docs)
 
