@@ -33,3 +33,8 @@ def create_user(db: Session, user: schemas.UserCreate):
 # Get all users
 def get_users(db: Session):
     return db.query(models.User).all()
+
+
+# Get user by email
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()

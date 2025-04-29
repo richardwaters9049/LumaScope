@@ -15,57 +15,30 @@ export default function HomePage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const loginPromise = fetch("http://localhost:8000/login", {
+    const res = await fetch("http://127.0.0.1:8000/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      credentials: "include",
       body: new URLSearchParams({ email, password }),
     });
 
-    const result = await loginPromise;
-
-    if (result.ok) {
-      // Store user authentication state in localStorage
-      localStorage.setItem('isAuthenticated', 'true');
-
-      // Redirect to the dashboard immediately after login
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("isAuthenticated", "true");
       router.push("/dashboard");
     } else {
-      // Show error toast if login failed
-      toast.error("Invalid credentials ❌", {
-        duration: 2000,
-      });
+      toast.error("Invalid credentials ❌");
     }
   };
 
   return (
     <main className="p-3 m-3 flex flex-col items-center justify-center h-screen w-screen gap-4">
-      <Image
-        src={LumaLogo}
-        alt="LumaScope Logo"
-        width={250}
-        height={250}
-        priority
-      />
+      <Image src={LumaLogo} alt="LumaScope Logo" width={250} height={250} priority />
       <h1 className="text-4xl font-medium tracking-widest text-blue-950 my-6">LumaScope</h1>
-      <form onSubmit={handleLogin} className="login-container m-4 p-4 flex flex-col items-center justify-center gap-5 w-full max-w-md tracking-widest">
-        <Input
-          placeholder="Email"
-          className="p-5"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          placeholder="Password"
-          type="password"
-          className="p-5"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button type="submit" className="p-6 my-5 text-2xl">
-          LOGIN
-        </Button>
+      <form onSubmit={handleLogin} className="login-container m-4 p-4 flex flex-col items-center gap-5 w-full max-w-md">
+        <Input placeholder="Email" className="p-5" value={email} onChange={e => setEmail(e.target.value)} />
+        <Input placeholder="Password" type="password" className="p-5" value={password} onChange={e => setPassword(e.target.value)} />
+        <Button type="submit" className="p-6 my-5 text-2xl">LOGIN</Button>
       </form>
     </main>
   );

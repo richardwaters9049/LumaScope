@@ -1,32 +1,108 @@
-# app/main.py
+import os
 from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app import models, crud, schemas, database
-from typing import List
-from .database import SessionLocal, engine
+from pydantic import BaseModel, EmailStr
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from fastapi.middleware.cors import CORSMiddleware
+import bcrypt
 
+from . import auth, crud
+
+# ---------------------------------------
+# Database Configuration (from .env)
+# ---------------------------------------
+DB_USER = os.getenv("PGUSER", "postgres")
+DB_PASS = os.getenv("PGPASSWORD", "riv")
+DB_HOST = os.getenv("PGHOST", "localhost")
+DB_NAME = os.getenv("PGDATABASE", "lumascope")
+DB_PORT = os.getenv("PGPORT", "5433")
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# Create tables if they don't exist
+Base.metadata.create_all(bind=engine)
+
+
+# ---------------------------------------
+# SQLAlchemy User model
+# ---------------------------------------
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    full_name = Column(String)
+    hashed_password = Column(String)
+
+
+# ---------------------------------------
+# Pydantic schemas
+# ---------------------------------------
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    full_name: str
+    password: str
+
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    full_name: str
+
+    class Config:
+        orm_mode = True
+
+
+# ---------------------------------------
+# FastAPI app & DB dependency
+# ---------------------------------------
 app = FastAPI()
 
 
-# Dependency to get the database session
 def get_db():
-    db = database.SessionLocal()
+    db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.create_user(db=db, user=user)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="Username or Email already taken")
-    return db_user
+# ---------------------------------------
+# User registration endpoint
+# ---------------------------------------
+@app.post("/users/", response_model=UserOut)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    # prevent dupes
+    if crud.get_user_by_email(db, user.email) or crud.get_user_by_username(
+        db, user.username
+    ):
+        raise HTTPException(status_code=400, detail="User already registered")
+    hashed = bcrypt.hashpw(user.password.encode(), bcrypt.gensalt()).decode()
+    new = User(
+        username=user.username,
+        email=user.email,
+        full_name=user.full_name,
+        hashed_password=hashed,
+    )
+    db.add(new)
+    db.commit()
+    db.refresh(new)
+    return new
 
 
-# GET request to fetch all users
-@app.get("/users/", response_model=List[schemas.User])
-def get_users(db: Session = Depends(get_db)):
-    users = crud.get_users(db)
-    return users
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or ["*"] for all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# include our login route
+app.include_router(auth.router)
