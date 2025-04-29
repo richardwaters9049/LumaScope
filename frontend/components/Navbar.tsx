@@ -159,7 +159,7 @@ export function Navbar() {
                                                     setIsOpen(false);
                                                     handleLogout();
                                                 }}
-                                                className="relative group font-semibold transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400"
+                                                className="relative group font-semibold transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400 hover:cursor-pointer"
                                             >
                                                 {link.name}
                                                 <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all group-hover:w-full"></span>
