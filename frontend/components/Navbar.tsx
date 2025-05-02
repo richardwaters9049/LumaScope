@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import LumaLogo from "@/public/images/luma-logo-4.png";
 import Image from "next/image";
+import History from "@/components/History";
 
 const navLinks = [
-    { name: 'History', href: '/history' },
+    { name: 'History', href: { History } },
     { name: 'Datasets', href: '/datasets' },
     { name: 'Upload', href: '/upload' },
     { name: 'Settings', href: '/settings' },

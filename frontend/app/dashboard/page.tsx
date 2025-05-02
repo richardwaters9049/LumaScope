@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
+import History from "@/components/History";
 import UploadForm from "@/components/UploadForm";
 
 const DashboardPage = () => {
@@ -28,7 +29,8 @@ const DashboardPage = () => {
     return (
         <div>
             <Navbar />
-            <UploadForm />
+            {/* <UploadForm /> */}
+            {<History />}
         </div>
     );
 };
