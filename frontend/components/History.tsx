@@ -84,11 +84,11 @@ const useNextImage = true; // Toggle this to false to use <img>
 
 export default function History() {
     return (
-        <div className="px-6 py-10 max-w-7xl mx-auto mt-30">
+        <div className="px-6 py-6 max-w-7xl mx-auto mt-30">
             <h2 className="text-6xl font-bold mb-14 text-center text-blue-950 dark:text-gray-100 tracking-widest">
                 Upload History
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {mockUploads.map((upload, index) => (
                     <motion.div
                         key={upload.id}

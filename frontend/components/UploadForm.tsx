@@ -112,19 +112,25 @@ export default function UploadForm() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {result.shap_plots.map((plot: string, idx: number) => (
-                                <motion.div
-                                    key={idx}
-                                    className="rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition"
-                                    whileHover={{ scale: 1.02 }}
-                                >
-                                    <img
-                                        src={plot}
-                                        alt={`SHAP Plot ${idx}`}
-                                        className="w-full h-auto object-cover rounded-md"
-                                    />
-                                </motion.div>
-                            ))}
+                            {Array.isArray(result?.shap_plots) && result.shap_plots.length > 0 ? (
+                                result.shap_plots.map((plot: string, idx: number) => (
+                                    <motion.div
+                                        key={idx}
+                                        className="rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition"
+                                        whileHover={{ scale: 1.02 }}
+                                    >
+                                        <img
+                                            src={plot}
+                                            alt={`SHAP Plot ${idx}`}
+                                            className="w-full h-auto object-cover rounded-md"
+                                        />
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 italic col-span-2 text-center">
+                                    No SHAP plots available for this upload.
+                                </p>
+                            )}
                         </div>
                     </motion.div>
                 )}

@@ -126,3 +126,7 @@
   color: #fff;
   opacity: 1;
 }
+
+.nav-links button:hover {
+  cursor: pointer;
+}

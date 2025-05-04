@@ -3,40 +3,38 @@
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import LumaLogo from "@/public/images/luma-logo-4.png";
-import Image from "next/image";
-import History from "@/components/History";
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import LumaLogo from '@/public/images/luma-logo-4.png';
 
 const navLinks = [
-    { name: 'History', href: { History } },
-    { name: 'Datasets', href: '/datasets' },
-    { name: 'Upload', href: '/upload' },
-    { name: 'Settings', href: '/settings' },
-    { name: 'Logout', href: '/logout' },
-];
+    { name: 'Upload', key: 'upload' },
+    { name: 'History', key: 'history' },
+    { name: 'Datasets', key: 'datasets' },
+    { name: 'Settings', key: 'settings' },
+    { name: 'Logout', key: 'logout' },
+] as const;
 
-export function Navbar() {
+interface NavbarProps {
+    activeView: 'upload' | 'history' | 'datasets' | 'settings';
+    setActiveView: (view: 'upload' | 'history' | 'datasets' | 'settings') => void;
+}
+
+export function Navbar({ activeView, setActiveView }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [fullName, setFullName] = useState<string | null>(null);
-    const pathname = usePathname();
     const router = useRouter();
 
     useEffect(() => {
-        const name = localStorage.getItem("full_name");
+        const name = localStorage.getItem('full_name');
         setFullName(name);
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('token');
-        localStorage.removeItem('full_name');
-        toast.success('Goodbye! 👋', {
-            duration: 1500,
-        });
+        localStorage.clear();
+        toast.success('Goodbye! 👋', { duration: 1500 });
         router.push('/');
     };
 
@@ -44,29 +42,14 @@ export function Navbar() {
         <motion.header
             initial={{ y: -60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{
-                type: "spring",
-                stiffness: 100,
-                damping: 14,
-            }}
+            transition={{ type: 'spring', stiffness: 100, damping: 14 }}
             className="w-full fixed top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-gray-950/70 shadow-md"
         >
             <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+                {/* Logo & Welcome */}
                 <div className="flex items-center justify-center gap-6 text-lg text-center px-4 tracking-widest">
-
-                    <Image
-                        src={LumaLogo}
-                        alt="LumaScope Logo"
-                        width={60}
-                        height={60}
-                        priority
-                    />
-                    <Link
-                        href="/"
-                        className="text-2xl font-semibold text-blue-950 dark:text-white"
-                    >
-                        LumaScope
-                    </Link>
+                    <Image src={LumaLogo} alt="LumaScope Logo" width={60} height={60} priority />
+                    <span className="text-2xl font-semibold text-blue-950 dark:text-white">LumaScope</span>
                     {fullName && (
                         <span className="font-semibold text-gray-700 dark:text-gray-300 hidden lg:inline">
                             Welcome, {fullName}
@@ -74,49 +57,35 @@ export function Navbar() {
                     )}
                 </div>
 
-                {/* Desktop links */}
-                <nav className="hidden md:flex space-x-8 text-lg tracking-widest">
+                {/* Desktop Navigation */}
+                <nav className="hidden md:flex space-x-8 text-lg tracking-widest nav-links">
                     {navLinks.map((link, index) => {
-                        const isActive = pathname === link.href;
+                        const isActive = activeView === link.key;
                         return (
                             <motion.div
-                                key={link.name}
+                                key={link.key}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    delay: 0.1 * index,
-                                    type: 'spring',
-                                    stiffness: 100,
-                                    damping: 20,
-                                }}
+                                transition={{ delay: 0.1 * index, type: 'spring', stiffness: 100, damping: 20 }}
                                 whileHover={{ scale: 1.05 }}
                             >
-                                {link.name === 'Logout' ? (
-                                    <button
-                                        onClick={handleLogout}
-                                        className="cursor-pointer relative group font-semibold transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400"
-                                    >
+                                {link.key === 'logout' ? (
+                                    <button onClick={handleLogout} className={navLinkClass(false)}>
                                         {link.name}
-                                        <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all group-hover:w-full"></span>
+                                        <Underline />
                                     </button>
                                 ) : (
-                                    <Link
-                                        href={link.href}
-                                        className={`relative group font-semibold transition-all duration-300 ${isActive
-                                            ? 'text-blue-600 dark:text-blue-400 drop-shadow-md'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400'
-                                            }`}
-                                    >
+                                    <button onClick={() => setActiveView(link.key)} className={navLinkClass(isActive)}>
                                         {link.name}
-                                        <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all group-hover:w-full"></span>
-                                    </Link>
+                                        <Underline isActive={isActive} />
+                                    </button>
                                 )}
                             </motion.div>
                         );
                     })}
                 </nav>
 
-                {/* Mobile menu button */}
+                {/* Mobile Menu Toggle */}
                 <div className="md:hidden">
                     <Button
                         variant="ghost"
@@ -129,7 +98,7 @@ export function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile menu */}
+            {/* Mobile Menu */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.nav
@@ -141,42 +110,30 @@ export function Navbar() {
                     >
                         <div className="flex flex-col space-y-4 px-6 py-4">
                             {navLinks.map((link, index) => {
-                                const isActive = pathname === link.href;
+                                const isActive = activeView === link.key;
                                 return (
                                     <motion.div
-                                        key={link.name}
+                                        key={link.key}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{
-                                            delay: 0.1 * index,
-                                            type: 'spring',
-                                            stiffness: 100,
-                                            damping: 20,
-                                        }}
+                                        transition={{ delay: 0.1 * index, type: 'spring', stiffness: 100, damping: 20 }}
                                     >
-                                        {link.name === 'Logout' ? (
+                                        {link.key === 'logout' ? (
+                                            <button onClick={() => { setIsOpen(false); handleLogout(); }} className={navLinkClass(false)}>
+                                                {link.name}
+                                                <Underline />
+                                            </button>
+                                        ) : (
                                             <button
                                                 onClick={() => {
                                                     setIsOpen(false);
-                                                    handleLogout();
+                                                    setActiveView(link.key);
                                                 }}
-                                                className="relative group font-semibold transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400 hover:cursor-pointer"
+                                                className={navLinkClass(isActive)}
                                             >
                                                 {link.name}
-                                                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all group-hover:w-full"></span>
+                                                <Underline isActive={isActive} />
                                             </button>
-                                        ) : (
-                                            <Link
-                                                href={link.href}
-                                                onClick={() => setIsOpen(false)}
-                                                className={`relative group font-semibold transition-all ${isActive
-                                                    ? 'text-blue-600 dark:text-blue-400 drop-shadow-md'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400'
-                                                    }`}
-                                            >
-                                                {link.name}
-                                                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all group-hover:w-full"></span>
-                                            </Link>
                                         )}
                                     </motion.div>
                                 );
@@ -186,5 +143,22 @@ export function Navbar() {
                 )}
             </AnimatePresence>
         </motion.header>
+    );
+}
+
+// Styling helpers
+function navLinkClass(isActive: boolean) {
+    return `relative group font-semibold transition-all duration-300 ${isActive
+        ? 'text-blue-600 dark:text-blue-400 drop-shadow-md'
+        : 'text-gray-700 dark:text-gray-300 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400'
+        }`;
+}
+
+function Underline({ isActive = false }: { isActive?: boolean }) {
+    return (
+        <span
+            className={`absolute left-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-400 to-pink-400 transition-all ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}
+        ></span>
     );
 }
