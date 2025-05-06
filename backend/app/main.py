@@ -5,10 +5,10 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
-from .uploads.router import router as uploads_router
+from app import auth
+from app.uploads.router import router as uploads_router
 
 import bcrypt
-
 from . import auth, crud
 
 # ---------------------------------------
@@ -84,7 +84,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Authentication & Upload routers
 app.include_router(auth.router)
 app.include_router(uploads_router, prefix="/upload", tags=["Upload"])
 

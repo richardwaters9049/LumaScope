@@ -24,9 +24,14 @@ export default function UploadForm() {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        const res = await fetch("http://localhost:8000/upload", {
+        const token = localStorage.getItem("token"); // ✅ FIXED: Correct token key
+
+        const res = await fetch("http://localhost:8000/upload/", {
             method: "POST",
             body: formData,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
 
         const data = await res.json();
