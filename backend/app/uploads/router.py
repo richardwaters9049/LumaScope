@@ -43,8 +43,8 @@ def get_current_user(
 
 
 # Accept both /upload and /upload/ without redirecting
-@router.post("/upload", include_in_schema=True)
-@router.post("/upload/", include_in_schema=False)
+@router.post("", include_in_schema=True)
+@router.post("/", include_in_schema=False)
 async def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
