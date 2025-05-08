@@ -4,25 +4,20 @@
 
 ### Overview
 
-- **Source**: The Cancer Imaging Archive (TCIA)
-- **Total Images**: 18,365 expert-labeled single-cell images
-- **Patient Groups**: AML patients and controls
-- **Image Size**: 11GB main image set
+- **Source**: [Kaggle Blood Cells Dataset](https://www.kaggle.com/datasets/paultimothymooney/blood-cells)
+- **Total Images**: 12,500+ single-cell images
+- **Cell Types**: Eosinophil, Lymphocyte, Monocyte, Neutrophil
+- **Image Format**: PNG
 
 ### Data Structure
 
 ```bash
 backend/ai-training/data/
-├── dataset-master/
-│   ├── normal/
-│   │   └── *.png
-│   └── leukemia/
-│       └── *.png
-└── dataset2-master/
-    ├── normal/
-    │   └── *.png
-    └── leukemia/
-        └── *.png
+├── blood-cells/
+│   ├── EOSINOPHIL/
+│   ├── LYMPHOCYTE/
+│   ├── MONOCYTE/
+│   └── NEUTROPHIL/
 ```
 
 ## Training Process

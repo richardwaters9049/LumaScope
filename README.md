@@ -21,6 +21,9 @@ LumaScope is an advanced AI-powered computational haematology platform designed 
 
 1. Project Aim
 2. Dataset
+   - Source: [Kaggle Blood Cells Dataset](https://www.kaggle.com/datasets/paultimothymooney/blood-cells)
+   - Total Images: 12,500+ blood cell images
+   - Categories: Eosinophil, Lymphocyte, Monocyte, Neutrophil
 3. AI Model
 4. Technology Stack
 5. Installation
