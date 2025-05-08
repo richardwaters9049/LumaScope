@@ -1,18 +1,17 @@
-# LumaScope
+# LumaScope 🔬
 
 ## Computational Haematology for Early Leukaemia Detection
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.95.0-green)
-
 ![Next.js](https://img.shields.io/badge/Next.js-15.0.0-black)
-
-![skops](https://img.shields.io/badge/skops-0.7-red)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Leukemia-red)
 
 ---
 
-## A research tool to identify abnormal blood cells associated with leukaemia, reducing diagnostic delays through AI-assisted analysis.
+## Project Overview 🩺
+
+LumaScope is an advanced AI-powered computational haematology platform designed to revolutionize early leukemia detection through sophisticated blood cell image analysis.
 
 👉 **Live Demo**: [Vercel App](https://your-demo-link.vercel.app) | **API Docs**: [FastAPI Swagger](http://localhost:8000/docs)
 
@@ -20,20 +19,128 @@
 
 ## Table of Contents
 
-1. [Project Aim](#project-aim)
-2. [The Problem](#the-problem)
-3. [How It Works](#how-it-works)
-4. [Technical Architecture](#technical-architecture)
-5. [Key Algorithms](#key-algorithms)
-6. [Expected Output](#expected-output)
-7. [Installation](#installation)
-8. [Limitations & Future Work](#limitations--future-work)
-9. [Why This Matters](#why-this-matters)
-10. [License](#license)
+1. Project Aim
+2. Dataset
+3. AI Model
+4. Technology Stack
+5. Installation
+6. Usage
+7. Contributing
+
+## Project Aim 🎯
+
+Our mission is to develop an intelligent system that can:
+
+- Detect abnormal blood cells associated with leukemia
+- Reduce diagnostic delays through AI-assisted analysis
+- Provide accurate, fast, and reliable cell classification
+- Support medical professionals in early disease identification
+
+## Dataset 📊
+
+### AML-Cytomorphology_LMU Dataset
+- **Source**: The Cancer Imaging Archive (TCIA)
+- **Total Images**: 18,365 expert-labeled single-cell images
+- **Patient Groups**: AML patients and controls
+- **Image Size**: 11GB main image set
+- **Annotation**: Separate metadata files available
+
+### Data Preprocessing
+- Images categorized into 'normal' and 'leukemia' classes
+- Standardized image size: 224x224 pixels
+- Normalized pixel values for consistent model input
+
+## AI Model 🤖
+
+### Model Architecture
+- **Base Model**: YOLOv8 (You Only Look Once)
+- **Variant**: YOLOv8n (Nano version for efficiency)
+- **Pre-training**: Transfer learning from pre-trained weights
+- **Training Approach**: 
+  - 80% training, 20% validation split
+  - 50 training epochs
+  - Batch size: 32
+
+### Model Capabilities
+- Binary classification: Normal vs Leukemia cells
+- High-precision cell detection
+- Interpretable results using SHAP values
+
+### Training Pipeline
+- **Data Preprocessing**:
+  - Image normalization
+  - Resize to 224x224 pixels
+  - Balanced dataset handling
+
+- **Feature Extraction**:
+  - Convolutional neural network layers
+  - Transfer learning from ImageNet weights
+
+- **Model Evaluation**:
+  - Precision, Recall, F1-Score
+  - Confusion Matrix
+  - SHAP value interpretation
+
+### Performance Metrics
+- Accuracy: To be determined after training
+- False Positive Rate: Minimized through careful preprocessing
+- Generalizability: Tested on held-out validation set
+
+## Technology Stack 💻
+
+### Backend
+- **Language**: Python 3.10+
+- **Web Framework**: FastAPI
+- **AI Libraries**: 
+  - PyTorch
+  - Ultralytics YOLOv8
+  - scikit-learn
+  - SHAP
+
+### Frontend
+- **Framework**: Next.js
+- **Authentication**: JWT
+- **State Management**: React Hooks
+
+### Database
+- **Type**: PostgreSQL
+- **ORM**: SQLAlchemy
+
+## Installation 🔧
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/LumaScope.git
+
+# Install backend dependencies
+cd LumaScope/backend
+pip install -r requirements.txt
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+
+# Run the application
+npm run dev
+```
+
+## Usage 🚀
+
+1. Upload blood cell images
+2. AI processes and classifies cells
+3. View detailed analysis and classification results
+
+## Contributing 🤝
+
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+
+## License 📄
+
+[Specify your license here]
 
 ---
 
-## Project Aim
+**Disclaimer**: LumaScope is a research tool and should not replace professional medical diagnosis. Always consult healthcare professionals.
 
 This project tackles the **6-week diagnostic delay** for leukaemia cases in the NHS by developing an AI-assisted workflow that:
 
