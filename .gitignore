@@ -1,0 +1,49 @@
+# === Python related ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.pyc
+*.log
+
+# === Virtual environments ===
+venv/
+.env/
+.env.*  
+*.env
+
+# === FastAPI-specific ===
+instance/
+*.db
+*.sqlite3
+
+# === Datasets and training data ===
+backend/ai-training/data/cell_images/
+backend/ai-training/AML_Cytomorphology_LMU/
+backend/ai-training/images/
+backend/ai-training/**/*.zip
+backend/ai-training/**/*.tar.gz
+
+# === Jupyter Notebooks (optional) ===
+.ipynb_checkpoints/
+
+# === Node.js / Frontend ===
+node_modules/
+.next/
+out/
+dist/
+
+# === System files ===
+.DS_Store
+Thumbs.db
+
+# === VSCode ===
+.vscode/
+
+# === Other ===
+logs/
+*.bak
+*.swp
+*.tmp
