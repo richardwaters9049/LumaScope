@@ -20,3 +20,9 @@ python-dotenv
 passlib[bcrypt]
 python-multipart
 bcrypt>=4.0.1
+ultralytics
+xgboost
+skops
+shap
+scikit-learn
+opencv-python-headless
