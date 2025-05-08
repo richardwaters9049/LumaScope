@@ -1,0 +1,6 @@
+
+    train: ./data/cell_images
+    val: ./data/cell_images
+    nc: 4
+    names: ['EOSINOPHIL', 'LYMPHOCYTE', 'MONOCYTE', 'NEUTROPHIL']
+    

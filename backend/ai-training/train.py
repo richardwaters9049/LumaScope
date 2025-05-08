@@ -51,17 +51,19 @@ class BloodCellDataset(Dataset):
         self.labels = []
         
         # Dynamically discover and categorize images
-        for cell_type in self.cell_types:
-            cell_dir = os.path.join(data_dir, cell_type)
-            if os.path.exists(cell_dir):
-                for img_name in os.listdir(cell_dir):
-                    # Support multiple image formats for flexibility
-                    if img_name.lower().endswith(('.png', '.jpg', '.jpeg', '.tif', '.tiff')):
-                        self.images.append(os.path.join(cell_dir, img_name))
-                        # Convert cell type to integer label using index
-                        # Enables multi-class classification
-                        label = self.cell_types.index(cell_type)
-                        self.labels.append(label)
+        # Handle potential nested directory structures
+        for root, dirs, files in os.walk(data_dir):
+            for cell_type in self.cell_types:
+                if cell_type.lower() in root.lower():
+                    for img_name in files:
+                        # Support multiple image formats for flexibility
+                        if img_name.lower().endswith(('.png', '.jpg', '.jpeg', '.tif', '.tiff')):
+                            full_path = os.path.join(root, img_name)
+                            self.images.append(full_path)
+                            # Convert cell type to integer label using index
+                            # Enables multi-class classification
+                            label = self.cell_types.index(cell_type)
+                            self.labels.append(label)
         
     def __len__(self):
         """Return the total number of images in the dataset.
@@ -97,78 +99,222 @@ class BloodCellDataset(Dataset):
         return image, label
 
 def train_model(data_dir, model_path='blood_cell_classification_model.pt', epochs=50, batch_size=32):
-    """Train a multi-class blood cell classification model using YOLOv8.
+    """Train a multi-class blood cell classification model using Ultralytics YOLO.
     
     This function handles the entire training pipeline, including:
-    1. Data preprocessing and augmentation
-    2. Dataset splitting
-    3. Model initialization
-    4. Training loop
-    5. Model saving
-    6. Performance evaluation
+    1. Dataset preparation
+    2. Model initialization
+    3. Training configuration
+    4. Performance tracking
     
     Args:
-        data_dir (str): Root directory containing cell type image subdirectories
-        model_path (str): File path to save the trained model weights
-        epochs (int): Number of complete passes through the entire training dataset
-        batch_size (int): Number of images processed in a single training iteration
+        data_dir (str): Root directory of training images
+        model_path (str): Path to save trained model weights
+        epochs (int, optional): Number of training epochs. Defaults to 50.
+        batch_size (int, optional): Training batch size. Defaults to 32.
     
     Returns:
-        tuple: Training results and performance metrics
+        dict: Training results and performance metrics
     """
-    # Define image preprocessing transformations
-    # Ensures consistent input size, color normalization, and tensor conversion
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),  # Standardize image dimensions
-        transforms.ToTensor(),  # Convert to PyTorch tensor
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],  # ImageNet mean values
-            std=[0.229, 0.224, 0.225]    # ImageNet standard deviation values
-        )
-    ])
+    import os
+    import yaml
+    from ultralytics import YOLO
     
-    # Create custom dataset with flexible image loading
-    dataset = BloodCellDataset(data_dir, transform=transform)
+    # Prepare YOLO-compatible dataset configuration
+    def prepare_yolo_dataset_yaml(data_dir):
+        # Define cell types based on directory structure
+        cell_types = ['EOSINOPHIL', 'LYMPHOCYTE', 'MONOCYTE', 'NEUTROPHIL']
+        
+        # Prepare train and validation paths
+        train_path = os.path.join(data_dir, 'train')
+        val_path = os.path.join(data_dir, 'val')
+        
+        # Create directories if they don't exist
+        os.makedirs(train_path, exist_ok=True)
+        os.makedirs(val_path, exist_ok=True)
+        
+        # Split dataset into train and validation
+        for cell_type in cell_types:
+            type_dir = os.path.join(data_dir, cell_type)
+            if os.path.exists(type_dir):
+                # Get all images for this cell type
+                images = [f for f in os.listdir(type_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.tif', '.tiff'))]
+                
+                # Simple 80-20 train-val split
+                train_count = int(len(images) * 0.8)
+                train_images = images[:train_count]
+                val_images = images[train_count:]
+                
+                # Create train and val subdirectories for each cell type
+                os.makedirs(os.path.join(train_path, cell_type), exist_ok=True)
+                os.makedirs(os.path.join(val_path, cell_type), exist_ok=True)
+                
+                # Copy images to train and val directories
+                for img in train_images:
+                    os.symlink(
+                        os.path.join(type_dir, img), 
+                        os.path.join(train_path, cell_type, img)
+                    )
+                for img in val_images:
+                    os.symlink(
+                        os.path.join(type_dir, img), 
+                        os.path.join(val_path, cell_type, img)
+                    )
+        
+        # Create YAML configuration for YOLO
+        dataset_yaml = {
+            'train': train_path,
+            'val': val_path,
+            'nc': len(cell_types),
+            'names': cell_types
+        }
+        
+        yaml_path = os.path.join(data_dir, 'blood_cell_dataset.yaml')
+        with open(yaml_path, 'w') as f:
+            yaml.dump(dataset_yaml, f)
+        
+        return yaml_path
     
-    # Stratified dataset splitting for training and validation
-    # Ensures representative sampling of all cell types
-    train_size = int(0.8 * len(dataset))  # 80% training, 20% validation
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    # Prepare dataset configuration
+    dataset_yaml_path = prepare_yolo_dataset_yaml(data_dir)
     
-    # Create data loaders for efficient batch processing
-    train_loader = DataLoader(
-        train_dataset, 
-        batch_size=batch_size, 
-        shuffle=True,  # Randomize data order to prevent overfitting
-        num_workers=4  # Parallel data loading
-    )
-    val_loader = DataLoader(
-        val_dataset, 
-        batch_size=batch_size, 
-        shuffle=False  # Maintain order for consistent validation
-    )
+    # Initialize YOLO model
+    model = YOLO('yolov8n-cls.pt')  # Start with a pre-trained classification model
     
-    # Initialize YOLOv8 classification model
-    # Uses lightweight nano variant for efficiency
-    model = YOLO('yolov8n-cls.yaml')  # Nano classification model
-    
-    # Conduct model training
+    # Train the model
     results = model.train(
-        data=train_loader,
+        data=dataset_yaml_path,
         epochs=epochs,
-        imgsz=224,  # Image size matching preprocessing
-        val=val_loader,
-        num_classes=len(dataset.cell_types)  # Dynamic class count
+        batch=batch_size,
+        imgsz=224,  # Standard input size for classification
+        save=True,
+        project=os.path.dirname(model_path),
+        name=os.path.basename(model_path).replace('.pt', '')
     )
     
-    # Persist trained model for future inference
-    torch.save(model.state_dict(), model_path)
+    # Save the final model
+    model.save(model_path)
     
-    # Comprehensive model performance assessment
-    metrics = evaluate_model(model, val_loader)
+    return results
+    # Additional comprehensive diagnostics
+    print("\n--- System and Library Diagnostics ---")
+    try:
+        import torch
+        import torchvision
+        import ultralytics
+        
+        print(f"PyTorch Version: {torch.__version__}")
+        print(f"TorchVision Version: {torchvision.__version__}")
+        print(f"Ultralytics Version: {ultralytics.__version__}")
+    except ImportError as e:
+        print(f"Library Import Error: {e}")
     
-    return results, metrics
+    # Detailed dataset diagnostics
+    print(f"\nDataset Directory: {data_dir}")
+    print("Dataset Contents:")
+    image_extensions = ['.png', '.jpg', '.jpeg', '.tif', '.tiff']
+    cell_types = ['EOSINOPHIL', 'LYMPHOCYTE', 'MONOCYTE', 'NEUTROPHIL']
+    
+    # Comprehensive error checking
+    if not os.path.exists(data_dir):
+        raise FileNotFoundError(f"Dataset directory not found: {data_dir}")
+    
+    # Validate dataset structure with recursive search
+    dataset_valid = False
+    total_images = 0
+    
+    # Recursive directory search function
+    def find_images(directory):
+        images_found = []
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if any(file.lower().endswith(ext) for ext in image_extensions):
+                    images_found.append(os.path.join(root, file))
+        return images_found
+    
+    # Search for images in each cell type
+    for cell_type in cell_types:
+        cell_type_images = []
+        for root, dirs, files in os.walk(data_dir):
+            # Check if current directory matches cell type (case-insensitive)
+            if cell_type.lower() in root.lower():
+                cell_type_images.extend([
+                    os.path.join(root, f) for f in files 
+                    if any(f.lower().endswith(ext) for ext in image_extensions)
+                ])
+        
+        print(f"{cell_type}: {len(cell_type_images)} images")
+        total_images += len(cell_type_images)
+        
+        if len(cell_type_images) > 0:
+            dataset_valid = True
+    
+    print(f"Total images found: {total_images}")
+    
+    if not dataset_valid:
+        raise ValueError("No valid images found in the dataset. Please check the dataset structure.")
+    import os
+    import sys
+    import logging
+    import traceback
+    
+    # Diagnostic print statements
+    print(f"Python Executable: {sys.executable}")
+    print(f"Python Version: {sys.version}")
+    print(f"Current Working Directory: {os.getcwd()}")
+    print(f"Script Location: {__file__}")
+    
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO, 
+        format='%(asctime)s - %(levelname)s: %(message)s',
+        handlers=[
+            logging.FileHandler('training_log.txt'),
+            logging.StreamHandler()
+        ]
+    )
+    logger = logging.getLogger(__name__)
+    
+    with open(yaml_path, 'w') as f:
+        f.write(yaml_content)
+    
+    logger.info(f"Created dataset configuration: {yaml_path}")
+    
+    try:
+        # Initialize YOLO classification model
+        model = YOLO('yolov8n-cls.pt')  # Use pre-trained nano classification model
+        
+        logger.info("Starting model training...")
+        
+        # Training configuration
+        results = model.train(
+            data=yaml_path,
+            epochs=epochs,
+            imgsz=224,
+            batch=batch_size,
+            project='blood_cell_classification',
+            name='training_run',
+            verbose=True
+        )
+        
+        logger.info("Model training completed successfully.")
+        
+        # Performance evaluation
+        metrics = {
+            'accuracy': results.results_dict.get('top1_acc', 0),
+            'confusion_matrix': None,  # Placeholder for detailed metrics
+            'cell_types': cell_types
+        }
+        
+        # Save model weights
+        model.save(model_path)
+        logger.info(f"Model weights saved to: {model_path}")
+        
+        return results, metrics
+    
+    except Exception as e:
+        logger.error(f"Training failed: {e}")
+        raise
 
 def evaluate_model(model, val_loader):
     """Comprehensively assess model performance on validation dataset.
@@ -246,13 +392,15 @@ if __name__ == '__main__':
     """
     # Configurable training parameters
     # Adjust these based on dataset size, computational resources, and performance needs
-    data_dir = './AML_Cytomorphology_LMU/'  # Root directory of training images
+    data_dir = './data/cell_images'  # Updated data directory
     model_path = 'blood_cell_classification_model.pt'  # Output model weights file
     
     # Training hyperparameters
     training_config = {
         'epochs': 50,        # Number of complete training passes
         'batch_size': 32,   # Number of images per training iteration
+        'learning_rate': 0.001,  # Initial learning rate
+        'validation_split': 0.2,  # Percentage of data used for validation
     }
     
     # Execute model training with specified configuration
