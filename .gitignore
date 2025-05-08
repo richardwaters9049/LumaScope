@@ -14,6 +14,7 @@ venv/
 .env.*  
 *.env
 
+
 # === FastAPI-specific ===
 instance/
 *.db
@@ -25,6 +26,7 @@ backend/ai-training/AML_Cytomorphology_LMU/
 backend/ai-training/images/
 backend/ai-training/**/*.zip
 backend/ai-training/**/*.tar.gz
+backend/generate_secret_key.py
 
 # === Jupyter Notebooks (optional) ===
 .ipynb_checkpoints/
