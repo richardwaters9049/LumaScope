@@ -263,7 +263,7 @@ print(f"F1-score: {f1_score(y_test, y_pred):.2f}")
 **Backend Setup**
 
 ```bash
-git clone https://github.com/yourusername/BloodCellAI.git
+git clone https://github.com/richardwaters9049/LumaScope.git
 cd BloodCellAI/backend
 python3 -m venv venv
 source venv/bin/activate
