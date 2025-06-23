@@ -7,3 +7,13 @@ ultralytics==8.0.196
 scikit-learn==1.2.2
 matplotlib==3.7.1
 shap==0.42.1
+fastapi
+uvicorn
+python-dotenv
+sqlalchemy
+psycopg2-binary
+passlib[bcrypt]
+python-jose
+python-multipart
+bcrypt
+pydantic
