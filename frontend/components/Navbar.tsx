@@ -9,33 +9,63 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import LumaLogo from '@/public/images/luma-logo-4.png';
 
-const navLinks = [
+type NavView = 'upload' | 'history' | 'datasets' | 'settings';
+type NavLink = 
+  | { name: string; key: NavView }
+  | { name: string; key: 'logout' };
+
+const navLinks: NavLink[] = [
     { name: 'Upload', key: 'upload' },
     { name: 'History', key: 'history' },
     { name: 'Datasets', key: 'datasets' },
     { name: 'Settings', key: 'settings' },
     { name: 'Logout', key: 'logout' },
-] as const;
+];
 
-interface NavbarProps {
-    activeView: 'upload' | 'history' | 'datasets' | 'settings';
-    setActiveView: (view: 'upload' | 'history' | 'datasets' | 'settings') => void;
+interface User {
+    id: string;
+    email: string;
+    fullName: string;
+    role?: string;
 }
 
-export function Navbar({ activeView, setActiveView }: NavbarProps) {
+interface NavbarProps {
+    activeView: NavView;
+    setActiveView: (view: NavView) => void;
+    user: User | null;
+}
+
+export function Navbar({ activeView, setActiveView, user }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [fullName, setFullName] = useState<string | null>(null);
     const router = useRouter();
 
-    useEffect(() => {
-        const name = localStorage.getItem('full_name');
-        setFullName(name);
-    }, []);
+    const handleLogout = async () => {
+        try {
+            // Call the logout API
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+            });
+            
+            // Clear local storage
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            
+            // Show success message and redirect
+            toast.success('Logged out successfully!', { duration: 1500 });
+            router.push('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            toast.error('Failed to log out. Please try again.');
+        }
+    };
 
-    const handleLogout = () => {
-        localStorage.clear();
-        toast.success('Goodbye! 👋', { duration: 1500 });
-        router.push('/');
+    const handleNavClick = (key: string) => {
+        if (key === 'logout') {
+            handleLogout();
+        } else if (['upload', 'history', 'datasets', 'settings'].includes(key)) {
+            setActiveView(key as NavView);
+        }
+        setIsOpen(false);
     };
 
     return (
@@ -48,41 +78,55 @@ export function Navbar({ activeView, setActiveView }: NavbarProps) {
             <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
                 {/* Logo & Welcome */}
                 <div className="flex items-center justify-center gap-6 text-lg text-center px-4 tracking-widest">
-                    <Image src={LumaLogo} alt="LumaScope Logo" width={60} height={60} priority />
-                    <span className="text-2xl font-semibold text-blue-950 dark:text-white">LumaScope</span>
-                    {fullName && (
-                        <span className="font-semibold text-gray-700 dark:text-gray-300 hidden lg:inline">
-                            Welcome, {fullName}
-                        </span>
+                    <Image 
+                        src={LumaLogo} 
+                        alt="LumaScope Logo" 
+                        className="h-12 w-auto cursor-pointer" 
+                        priority 
+                        onClick={() => setActiveView('upload')}
+                    />
+                    {user?.fullName && (
+                        <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <span className="hidden lg:inline">Welcome back,</span>
+                            <span className="font-medium text-gray-800 dark:text-white truncate max-w-[150px]">
+                                {user.fullName}
+                            </span>
+                            {user.role && (
+                                <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                    {user.role}
+                                </span>
+                            )}
+                        </div>
                     )}
                 </div>
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex space-x-8 text-lg tracking-widest nav-links">
-                    {navLinks.map((link, index) => {
-                        const isActive = activeView === link.key;
+                    <ul>
+                        {navLinks.map((link) => {
+                        // Hide settings for non-admin users
+                        if (link.key === 'settings' && user?.role !== 'admin') {
+                            return null;
+                        }
+                        
+                        const isActive = link.key !== 'logout' && activeView === link.key;
+                        const isLogout = link.key === 'logout';
+                        
                         return (
-                            <motion.div
-                                key={link.key}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 * index, type: 'spring', stiffness: 100, damping: 20 }}
-                                whileHover={{ scale: 1.05 }}
-                            >
-                                {link.key === 'logout' ? (
-                                    <button onClick={handleLogout} className={navLinkClass(false)}>
-                                        {link.name}
-                                        <Underline />
-                                    </button>
-                                ) : (
-                                    <button onClick={() => setActiveView(link.key)} className={navLinkClass(isActive)}>
-                                        {link.name}
-                                        <Underline isActive={isActive} />
-                                    </button>
-                                )}
-                            </motion.div>
+                            <li key={link.key}>
+                                <button
+                                    onClick={() => handleNavClick(link.key)}
+                                    className={`${navLinkClass(isActive)} ${
+                                        isLogout ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300' : ''
+                                    }`}
+                                >
+                                    {link.name}
+                                    {isActive && <Underline isActive />}
+                                </button>
+                            </li>
                         );
                     })}
+                    </ul>
                 </nav>
 
                 {/* Mobile Menu Toggle */}
@@ -109,32 +153,34 @@ export function Navbar({ activeView, setActiveView }: NavbarProps) {
                         className="overflow-hidden md:hidden bg-white/90 dark:bg-gray-950/90 backdrop-blur-md"
                     >
                         <div className="flex flex-col space-y-4 px-6 py-4">
-                            {navLinks.map((link, index) => {
-                                const isActive = activeView === link.key;
+                            {navLinks.map((link) => {
+                                // Hide settings for non-admin users
+                                if (link.key === 'settings' && user?.role !== 'admin') {
+                                    return null;
+                                }
+                                
+                                const isActive = link.key !== 'logout' && activeView === link.key;
+                                const isLogout = link.key === 'logout';
+                                
                                 return (
                                     <motion.div
                                         key={link.key}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.1 * index, type: 'spring', stiffness: 100, damping: 20 }}
+                                        transition={{ delay: 0.1 * navLinks.indexOf(link), type: 'spring', stiffness: 100, damping: 20 }}
                                     >
-                                        {link.key === 'logout' ? (
-                                            <button onClick={() => { setIsOpen(false); handleLogout(); }} className={navLinkClass(false)}>
-                                                {link.name}
-                                                <Underline />
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    setIsOpen(false);
-                                                    setActiveView(link.key);
-                                                }}
-                                                className={navLinkClass(isActive)}
-                                            >
-                                                {link.name}
-                                                <Underline isActive={isActive} />
-                                            </button>
-                                        )}
+                                        <button
+                                            onClick={() => {
+                                                setIsOpen(false);
+                                                handleNavClick(link.key);
+                                            }}
+                                            className={`${navLinkClass(isActive)} ${
+                                                isLogout ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300' : ''
+                                            }`}
+                                        >
+                                            {link.name}
+                                            {isActive && <Underline isActive />}
+                                        </button>
                                     </motion.div>
                                 );
                             })}

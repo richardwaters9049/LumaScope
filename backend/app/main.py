@@ -1,43 +1,21 @@
 import os
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
 from app import auth
 from app.uploads.router import router as uploads_router
+from app.models import Base, User
+from app.database import engine, SessionLocal
 
 import bcrypt  # type: ignore
 from . import auth, crud
 
 # ---------------------------------------
-# Database Configuration (from .env or fallback)
+# Database Configuration
 # ---------------------------------------
-DB_USER = os.getenv("PGUSER", "postgres")
-DB_PASS = os.getenv("PGPASSWORD", "riv")
-DB_HOST = os.getenv("PGHOST", "localhost")
-DB_NAME = os.getenv("PGDATABASE", "lumascope")
-DB_PORT = os.getenv("PGPORT", "5433")
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 Base.metadata.create_all(bind=engine)
-
-
-# ---------------------------------------
-# SQLAlchemy User model
-# ---------------------------------------
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
-    full_name = Column(String)
-    hashed_password = Column(String)
-
 
 # ---------------------------------------
 # Pydantic schemas
@@ -66,6 +44,7 @@ app = FastAPI()
 
 
 def get_db():
+    """Dependency to get DB session"""
     db = SessionLocal()
     try:
         yield db
@@ -78,10 +57,11 @@ def get_db():
 # ---------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000"],  # Add production URL when available
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Range", "X-Total-Count"],
 )
 
 app.include_router(auth.router)
