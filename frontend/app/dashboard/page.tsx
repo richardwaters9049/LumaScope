@@ -18,7 +18,7 @@ function DashboardContent() {
     const router = useRouter();
     const { user, isAuthenticated, loading } = useAuth();
     const [activeView, setActiveView] = useState<ActiveViewType>('upload');
-    
+
     // Handle view changes with type safety
     const handleViewChange = (view: string) => {
         if (['upload', 'history', 'datasets', 'settings'].includes(view)) {
@@ -47,10 +47,10 @@ function DashboardContent() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Navbar 
-                activeView={activeView} 
-                setActiveView={handleViewChange} 
-                user={user} 
+            <Navbar
+                activeView={activeView}
+                setActiveView={handleViewChange}
+                user={user}
             />
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-6">
@@ -121,6 +121,6 @@ function DashboardContent() {
                     )}
                 </AnimatePresence>
             </main>
-        </>
+        </div>
     );
 }
