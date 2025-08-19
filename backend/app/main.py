@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import auth
 from app.uploads.router import router as uploads_router
 
-import bcrypt
+import bcrypt  # type: ignore
 from . import auth, crud
 
 # ---------------------------------------
