@@ -1,10 +1,21 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-// Load fonts as CSS variables
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+export const metadata: Metadata = {
+  title: "LumaScope",
+  description: "AI-powered blood smear analysis for early leukemia detection.",
+};
+
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
@@ -16,11 +27,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   display: "swap",
 });
-
-export const metadata: Metadata = {
-  title: "LumaScope",
-  description: "AI-powered blood smear analysis for early leukemia detection.",
-};
 
 export default function RootLayout({
   children,

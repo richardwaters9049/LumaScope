@@ -1,0 +1,181 @@
+.
+├── backend
+│   ├── __pycache__
+│   │   └── main.cpython-313.pyc
+│   ├── ai-training
+│   │   ├── blood_cell_classification
+│   │   ├── blood_cell_dataset.yaml
+│   │   ├── data
+│   │   ├── dataset_check.py
+│   │   ├── debug_training.py
+│   │   ├── diagnose.sh
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   ├── system_check.py
+│   │   ├── train.py
+│   │   ├── training_log.txt
+│   │   ├── venv
+│   │   └── yolov8n-cls.pt
+│   ├── app
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── auth.py
+│   │   ├── crud.py
+│   │   ├── database.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   └── uploads
+│   ├── Dockerfile
+│   ├── generate_secret_key.py
+│   ├── notes.md
+│   ├── render.yaml
+│   ├── requirements.txt
+│   ├── test_smear.jpg
+│   ├── test_upload.py
+│   └── venv
+│       ├── bin
+│       ├── include
+│       ├── lib
+│       ├── pyvenv.cfg
+│       └── share
+├── docker-compose.yml
+├── frontend
+│   ├── app
+│   │   ├── api
+│   │   ├── dashboard
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── login
+│   │   └── page.tsx
+│   ├── bun.lock
+│   ├── components
+│   │   ├── DarkModeToggle.tsx
+│   │   ├── History.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── ResultCard.tsx
+│   │   ├── ui
+│   │   └── UploadForm.tsx
+│   ├── components.json
+│   ├── contexts
+│   │   └── AuthContext.tsx
+│   ├── Dockerfile
+│   ├── frontend
+│   ├── hooks
+│   │   └── useAuth.ts
+│   ├── lib
+│   │   ├── api.ts
+│   │   └── utils.ts
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── node_modules
+│   │   ├── @alloc
+│   │   ├── @img
+│   │   ├── @next
+│   │   ├── @radix-ui
+│   │   ├── @swc
+│   │   ├── @tailwindcss
+│   │   ├── @types
+│   │   ├── asynckit
+│   │   ├── axios
+│   │   ├── busboy
+│   │   ├── call-bind-apply-helpers
+│   │   ├── caniuse-lite
+│   │   ├── class-variance-authority
+│   │   ├── client-only
+│   │   ├── clsx
+│   │   ├── color
+│   │   ├── color-convert
+│   │   ├── color-name
+│   │   ├── color-string
+│   │   ├── combined-stream
+│   │   ├── csstype
+│   │   ├── delayed-stream
+│   │   ├── detect-libc
+│   │   ├── dunder-proto
+│   │   ├── enhanced-resolve
+│   │   ├── es-define-property
+│   │   ├── es-errors
+│   │   ├── es-object-atoms
+│   │   ├── es-set-tostringtag
+│   │   ├── follow-redirects
+│   │   ├── form-data
+│   │   ├── framer-motion
+│   │   ├── function-bind
+│   │   ├── get-intrinsic
+│   │   ├── get-proto
+│   │   ├── gopd
+│   │   ├── graceful-fs
+│   │   ├── has-symbols
+│   │   ├── has-tostringtag
+│   │   ├── hasown
+│   │   ├── is-arrayish
+│   │   ├── jiti
+│   │   ├── jwt-decode
+│   │   ├── lightningcss
+│   │   ├── lightningcss-darwin-arm64
+│   │   ├── lucide-react
+│   │   ├── math-intrinsics
+│   │   ├── mime-db
+│   │   ├── mime-types
+│   │   ├── motion-dom
+│   │   ├── motion-utils
+│   │   ├── nanoid
+│   │   ├── next
+│   │   ├── picocolors
+│   │   ├── postcss
+│   │   ├── proxy-from-env
+│   │   ├── react
+│   │   ├── react-dom
+│   │   ├── scheduler
+│   │   ├── semver
+│   │   ├── sharp
+│   │   ├── simple-swizzle
+│   │   ├── sonner
+│   │   ├── source-map-js
+│   │   ├── streamsearch
+│   │   ├── styled-jsx
+│   │   ├── tailwind-merge
+│   │   ├── tailwindcss
+│   │   ├── tapable
+│   │   ├── tslib
+│   │   ├── tw-animate-css
+│   │   ├── typescript
+│   │   └── undici-types
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── images
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── types
+│       └── index.ts
+├── project_tree.txt
+├── README.md
+└── venv
+    ├── bin
+    │   ├── activate
+    │   ├── activate.csh
+    │   ├── activate.fish
+    │   ├── Activate.ps1
+    │   ├── pip
+    │   ├── pip3
+    │   ├── pip3.13
+    │   ├── python -> python3.13
+    │   ├── python3 -> python3.13
+    │   └── python3.13 -> /opt/homebrew/opt/python@3.13/bin/python3.13
+    ├── include
+    │   └── python3.13
+    ├── lib
+    │   └── python3.13
+    └── pyvenv.cfg
+
+109 directories, 70 files

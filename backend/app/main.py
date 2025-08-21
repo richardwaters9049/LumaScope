@@ -4,13 +4,13 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
-from app import auth
 from app.uploads.router import router as uploads_router
 from app.models import Base, User
 from app.database import engine, SessionLocal
 
 import bcrypt  # type: ignore
-from . import auth, crud
+from .auth import router as auth_router
+from . import crud
 
 # ---------------------------------------
 # Database Configuration
@@ -64,7 +64,7 @@ app.add_middleware(
     expose_headers=["Content-Range", "X-Total-Count"],
 )
 
-app.include_router(auth.router)
+app.include_router(auth_router)
 app.include_router(uploads_router, prefix="/upload", tags=["Upload"])
 
 

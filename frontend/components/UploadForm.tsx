@@ -40,7 +40,7 @@ export default function UploadForm() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center justify-start p-4">
             <motion.div
                 className="w-full max-w-lg"
                 initial={{ opacity: 0, scale: 0.95 }}

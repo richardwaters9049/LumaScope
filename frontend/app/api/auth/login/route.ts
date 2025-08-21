@@ -2,15 +2,28 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    // Get form data from the request
+    const formData = await request.formData();
+    const username = formData.get('username');
+    const password = formData.get('password');
     
-    // Call the backend API
+    if (!username || !password) {
+      return NextResponse.json(
+        { error: 'Username and password are required' },
+        { status: 400 }
+      );
+    }
+    
+    // Forward the form data to the backend
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({ email, password }),
+      body: new URLSearchParams({
+        username: username.toString(),
+        password: password.toString(),
+      }),
     });
 
     const data = await response.json();

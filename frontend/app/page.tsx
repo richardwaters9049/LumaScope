@@ -17,10 +17,14 @@ export default function HomePage() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/login", {
+      const formData = new URLSearchParams();
+      formData.append('username', email);
+      formData.append('password', password);
+      
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ email, password }),
+        body: formData,
       });
 
       if (res.ok) {
